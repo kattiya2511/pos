@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ระบบคลังสินค้า (Google Sheets)</title>
+  <link rel="stylesheet" href="stock.css" />
+</head>
+<body>
+
+     <!-- Modal เพิ่มสินค้า -->
+<div class="modal hidden" id="addProductModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>สร้างสินค้า</h2>
+      <button onclick="closeAddModal()">✕</button>
+    </div>
+
+    <form id="addProductForm" onsubmit="submitNewProduct(event)">
+      <div class="form-grid">
+        <!-- ซ้าย -->
+        <div class="form-left">
+          <div class="image-upload-box" onclick="document.getElementById('productImage').click()">
+            <img id="previewImage" src="./images/logo.png" alt="เลือกรูปภาพ" />
+            <span class="overlay-text">แตะเพื่อแก้ไข</span>
+<input type="file" id="productImage" accept="image/*" />
+          </div>
+
+          <label>ชื่อสินค้า</label>
+          <input type="text" id="productName" required />
+
+          <div class="form-group barcode-group">
+            <label for="productCode">รหัสสินค้า</label>
+            <div class="barcode-input-wrapper">
+              <input type="text" id="productCode" placeholder="รหัสสินค้า" />
+              <button type="button" class="scan-icon-btn" onclick="scanBarcode()" title="สแกนบาร์โค้ด">
+                <i class="ph ph-barcode"></i>
+              </button>
+            </div>
+          </div>
+
+          <div id="barcodeReader" class="hidden" style="width: 300px; margin-top: 1rem;"></div>
+
+          <div id="scannerOverlay" class="scanner-overlay hidden">
+            <div class="scanner-box">
+              <button class="scanner-close" onclick="stopScanner()">✕</button>
+              <div id="barcode-scanner"></div>
+              <div class="scanner-instruction">วางบาร์โค้ดในกรอบ แล้วรอสแกน...</div>
+            </div>
+          </div>
+
+          <label>จำนวน</label>
+          <input type="number" id="productQty" required />
+
+          <label>หมวดหมู่</label>
+          <input type="text" id="productCategory" list="categoryOptions" placeholder="พิมพ์หรือเลือกหมวดหมู่" required />
+          <datalist id="categoryOptions">
+            <!-- รายการจะถูกเพิ่มจาก Firestore -->
+          </datalist>
+
+          <label>ประเภทสินค้า</label>
+          <select id="productType">
+            <option value="ทั่วไป">สินค้าทั่วไป</option>
+            <option value="ค่าบริการ">ค่าบริการ</option>
+          </select>
+        </div>
+
+        <!-- ขวา -->
+        <div class="form-right">
+          <div class="checkbox-group">
+            <label><input type="checkbox" id="isTaxed" checked /> สินค้ามีภาษี</label>
+            <label><input type="checkbox" id="isPopular" /> สินค้ายอดนิยม</label>
+            <label><input type="checkbox" id="showInPOS" checked /> แสดงบนหน้าขาย</label>
+          </div>
+
+          <label>ราคาทุน</label>
+          <input type="number" id="costPrice" step="0.01" />
+
+          <label>ราคาขาย</label>
+          <input type="number" id="sellPrice" step="0.01" required />
+
+          <button type="submit" class="btn-save">✅ บันทึกสินค้า</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ฟอร์มแก้ไข -->
+<div id="editFormContainer" class="hidden">
+  <form id="editProductForm" onsubmit="updateProduct(event)">
+    <input type="hidden" id="editProductId" />
+    <input type="text" id="editName" required />
+    <input type="text" id="editCategory" />
+    <input type="number" id="editQty" />
+    <button class="btn" type="submit">บันทึก</button>
+    <button type="button" class="btn-secondary" onclick="cancelEdit()">ยกเลิก</button>
+  </form>
+</div>
+
+  <script type="module" src="stock.js"></script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>เพิ่มสินค้าใหม่</title>
+  <style>
+    body {
+      font-family: 'Sarabun', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f4f4f4;
+    }
+    h2 {
+      margin-bottom: 10px;
+    }
+    form {
+      max-width: 400px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input {
+      display: block;
+      width: 100%;
+      margin-bottom: 12px;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+    button {
+      padding: 10px 15px;
+      font-size: 16px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #218838;
+    }
+  </style>
+</head>
+<body>
+
+<h2>➕ เพิ่มสินค้าเข้า Firestore</h2>
+
+<form id="addProductForm">
+  <input type="text" id="name" placeholder="ชื่อสินค้า" required />
+  <input type="number" id="quantity" placeholder="จำนวนคงเหลือ" required />
+  <input type="text" id="image" placeholder="URL รูปภาพ (เช่น https://...)" />
+  <input type="text" id="category" placeholder="หมวดหมู่ (เช่น นม, ขนม)" />
+  <button type="submit">บันทึกสินค้า</button>
+</form>
+
+<!-- ✅ Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  // 🔐 Firebase config ของคุณ
+  const firebaseConfig = {
+    apiKey: "AIzaSyCWdMC53F7cTDODlaB__DUeWvssElyRh-0",
+    authDomain: "pos-shop-7ad71.firebaseapp.com",
+    projectId: "pos-shop-7ad71",
+    storageBucket: "pos-shop-7ad71.appspot.com",
+    messagingSenderId: "885384810023",
+    appId: "1:885384810023:web:101fa4971085da93284802"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  const form = document.getElementById("addProductForm");
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById("name").value.trim();
+    const quantity = parseInt(document.getElementById("quantity").value);
+    const image = document.getElementById("image").value.trim();
+    const category = document.getElementById("category").value.trim();
+
+    if (!name || isNaN(quantity)) {
+      alert("กรุณากรอกชื่อและจำนวนให้ถูกต้อง");
+      return;
+    }
+
+    try {
+      await addDoc(collection(db, "stock"), {
+        name,
+        quantity,
+        image: image || null,
+        category: category || "ทั่วไป",
+        createdAt: new Date()
+      });
+      alert("✅ เพิ่มสินค้าเรียบร้อยแล้ว!");
+      form.reset();
+    } catch (err) {
+      console.error("เกิดข้อผิดพลาดในการเพิ่มสินค้า:", err);
+      alert("❌ เพิ่มสินค้าไม่สำเร็จ");
+    }
+  });
+</script>
+
+</body>
+</html>

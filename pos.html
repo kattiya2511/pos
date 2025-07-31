@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>POS System</title>
+  <link rel="stylesheet" href="pos.css" />
+  <link rel="stylesheet" href="stock.css" />
+  <script defer src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <script src="https://unpkg.com/@ericblade/quagga2@v0.0.10/dist/quagga.min.js"></script>
+</head>
+<body>
+  <!-- ✅ Sidebar -->
+  <div id="sidebar">
+    <div class="sidebar-item active" onclick="showPage('posPage', this)">ขายหน้าร้าน</div>
+    <div class="sidebar-item" onclick="showPage('billPage', this)">การจัดการบิล</div>
+    <div class="sidebar-item" onclick="showPage('reportMainPage', this); loadSalesReport();">รายงาน</div>
+    <div class="sidebar-item" onclick="showPage('stockPage', this); loadStockData();">คลังสินค้า</div>
+    <div class="sidebar-item" onclick="showPage('settingsPage', this); openSettingTab(this, 'shop')">การตั้งค่า</div>
+    <div class="sidebar-item employee-only hidden" onclick="logoutEmployee()">ออกจากระบบ</div>
+  </div>
+
+  <!-- ✅ Main Content -->
+  <div id="main" class="full">
+    <div class="top-bar">
+      <button id="toggleSidebarBtn" onclick="toggleSidebar()">☰</button>
+      <input id="searchInput" placeholder="ค้นหาสินค้าทั้งหมด" oninput="filterProducts()" class="search-input" />
+      <button class="scan-btn" onclick="startScanner()">📷 สแกน</button>
+    </div>
+
+    <!-- ✅ หน้า POS -->
+    <div id="posPage" class="page active">
+      <div id="categoryList" class="category-list"></div>
+      <div class="product-area">
+        <div class="products" id="products"></div>
+      </div>
+      <div class="cart-panel">
+        <div class="cart-actions">
+          <button onclick="clearCart()">🧹 ล้างตะกร้า</button>
+          <button onclick="holdBill()">💾 พักบิล</button>
+          <button onclick="recallBill()">📂 เรียกบิล</button>
+        </div>
+        <div class="cart-header">🛒 ตะกร้าสินค้า</div>
+        <div id="cart-summary-box" class="cart-total">
+          <div class="cart-summary-row"><span>รวมก่อนลด:</span><span id="subtotal">0.00</span></div>
+          <div class="cart-summary-row"><span>ภาษี:</span><span id="tax">0.00</span></div>
+          <div class="cart-summary-total"><span>THB</span><span id="total">0.00</span></div>
+        </div>
+        <button class="pay-button" onclick="openCheckout()">ชำระเงิน</button>
+        <div class="cart-summary-bar">
+          <span id="cart-left-label">ขายหน้าร้าน</span>
+          <span id="cart-summary-count">0 รายการ / 0 ชิ้น</span>
+        </div>
+        <div class="cart-items" id="cartItems">ไม่มีรายการ</div>
+      </div>
+    </div>
+
+    <!-- ✅ หน้า คลังสินค้า -->
+    <div id="stockPage">
+      <div class="stock-sidebar">
+        <h4>หมวดหมู่</h4>
+        <div class="stock-category-list" id="stockCategoryList">
+          <div class="category-item active">ทั้งหมด</div>
+        </div>
+      </div>
+
+      <div class="stock-main">
+        <div class="stock-product-header">
+          <h3>สินค้าทั้งหมด</h3>
+          <button class="add-product-btn" onclick="openAddModal()">➕ เพิ่มสินค้า</button>
+        </div>
+
+        <div class="product-list" id="productList">⏳ กำลังโหลด...</div>
+      </div>
+
+      <!-- ✅ Modal เพิ่มสินค้า -->
+      <div class="modal hidden" id="addProductModal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2>สร้างสินค้า</h2>
+            <button onclick="closeAddModal()">✕</button>
+          </div>
+
+          <form id="addProductForm" onsubmit="submitNewProduct(event)">
+            <div class="form-grid">
+              <div class="form-left">
+                <div class="image-upload-box" onclick="document.getElementById('productImage').click()">
+                  <img id="previewImage" src="./images/logo.png" alt="เลือกรูปภาพ" />
+                  <span class="overlay-text">แตะเพื่อแก้ไข</span>
+                  <input type="file" id="productImage" accept="image/*" />
+                </div>
+
+                <label>ชื่อสินค้า</label>
+                <input type="text" id="productName" required />
+
+                <label>รหัสสินค้า</label>
+                <input type="text" id="productCode" placeholder="รหัสสินค้า" />
+
+                <label>จำนวน</label>
+                <input type="number" id="productQty" required />
+
+                <label>หมวดหมู่</label>
+                <input type="text" id="productCategory" list="categoryOptions" required />
+                <datalist id="categoryOptions"></datalist>
+
+                <label>ประเภทสินค้า</label>
+                <select id="productType">
+                  <option value="ทั่วไป">สินค้าทั่วไป</option>
+                  <option value="ค่าบริการ">ค่าบริการ</option>
+                </select>
+              </div>
+
+              <div class="form-right">
+                <div class="checkbox-group">
+                  <label><input type="checkbox" id="isTaxed" checked /> สินค้ามีภาษี</label>
+                  <label><input type="checkbox" id="isPopular" /> สินค้ายอดนิยม</label>
+                  <label><input type="checkbox" id="showInPOS" checked /> แสดงบนหน้าขาย</label>
+                </div>
+
+                <label>ราคาทุน</label>
+                <input type="number" id="costPrice" step="0.01" />
+
+                <label>ราคาขาย</label>
+                <input type="number" id="sellPrice" step="0.01" required />
+
+                <button type="submit" class="btn-save">✅ บันทึกสินค้า</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- ✅ ฟอร์มแก้ไข -->
+      <div id="editFormContainer" class="hidden">
+        <form id="editProductForm" onsubmit="updateProduct(event)">
+          <input type="hidden" id="editProductId" />
+          <input type="text" id="editName" required />
+          <input type="text" id="editCategory" />
+          <input type="number" id="editQty" />
+          <button class="btn" type="submit">บันทึก</button>
+          <button type="button" class="btn-secondary" onclick="cancelEdit()">ยกเลิก</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ Script -->
+  <script>
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz_wciGBcNg6P7X_68ZHI-qS7op2lvNN7l87iSLv9XPjWGG7heDLtQdqgM-iSZIOv9_uw/exec';
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('hidden');
+      document.getElementById('main').classList.toggle('expanded');
+    }
+
+    function showPage(pageId, el) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(pageId).classList.add('active');
+      document.querySelectorAll('.sidebar-item').forEach(item => item.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    function openAddModal() {
+      document.getElementById("addProductModal").classList.remove("hidden");
+    }
+
+    function closeAddModal() {
+      document.getElementById("addProductModal").classList.add("hidden");
+    }
+
+    async function submitNewProduct(event) {
+      event.preventDefault();
+      const name = document.getElementById('productName').value;
+      const code = document.getElementById('productCode').value;
+      const category = document.getElementById('productCategory').value;
+      const quantity = parseInt(document.getElementById('productQty').value);
+      const costPrice = parseFloat(document.getElementById('costPrice').value || 0);
+      const sellPrice = parseFloat(document.getElementById('sellPrice').value || 0);
+      const type = document.getElementById('productType').value;
+      const isTaxed = document.getElementById('isTaxed').checked;
+      const isPopular = document.getElementById('isPopular').checked;
+      const showInPOS = document.getElementById('showInPOS').checked;
+
+      const previewImg = document.getElementById('previewImage');
+      const image = previewImg ? previewImg.src : '';
+
+      const payload = {
+        name, code, category, quantity,
+        costPrice, sellPrice, type,
+        isTaxed, isPopular, showInPOS,
+        image, createdAt: new Date().toISOString()
+      };
+
+      try {
+        const res = await fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify(payload),
+          headers: { 'Content-Type': 'application/json' }
+        });
+        const result = await res.json();
+        if (result.status === 'success') {
+          alert('✅ เพิ่มสินค้าแล้ว');
+          closeAddModal();
+          loadProductsFromSheet();
+          loadPOSProducts();
+        } else {
+          alert('❌ ไม่สามารถเพิ่มสินค้าได้');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('❌ เกิดข้อผิดพลาดขณะส่งข้อมูล');
+      }
+    }
+
+    async function loadProductsFromSheet() {
+      const container = document.getElementById('productList');
+      if (!container) return;
+      container.innerHTML = '⏳ กำลังโหลด...';
+      try {
+        const res = await fetch(GOOGLE_SCRIPT_URL);
+        const data = await res.json();
+        let html = '';
+        data.forEach(item => {
+          html += `
+            <div class="product-card">
+              <img src="${item.image || 'https://via.placeholder.com/100'}" alt="${item.name}" />
+              <div>
+                <strong>${item.name}</strong><br/>
+                หมวด: ${item.category}<br/>
+                คงเหลือ: ${item.quantity}<br/>
+                ราคา: ${item.sellPrice} บาท
+              </div>
+            </div>`;
+        });
+        container.innerHTML = html;
+      } catch (err) {
+        console.error(err);
+        container.innerHTML = '❌ โหลดข้อมูลล้มเหลว';
+      }
+    }
+
+    async function loadPOSProducts() {
+      const container = document.getElementById('products');
+      if (!container) return;
+      container.innerHTML = '⏳ กำลังโหลด...';
+      try {
+        const res = await fetch(GOOGLE_SCRIPT_URL);
+        const data = await res.json();
+        let html = '';
+        data.forEach(item => {
+          if (!item.showInPOS || item.showInPOS === 'false') return;
+          html += `
+            <div class="product-card" onclick="addToCart('${item.name}', ${item.sellPrice})">
+              <img src="${item.image || 'https://via.placeholder.com/100'}" />
+              <div class="product-name">${item.name}</div>
+              <div class="product-price">${item.sellPrice} บาท</div>
+            </div>`;
+        });
+        container.innerHTML = html;
+      } catch (err) {
+        console.error(err);
+        container.innerHTML = '❌ โหลดสินค้า POS ล้มเหลว';
+      }
+    }
+
+    document.getElementById('productImage').addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          document.getElementById('previewImage').src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    window.loadStockData = function () {
+      loadProductsFromSheet();
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      loadProductsFromSheet();
+      loadPOSProducts();
+    });
+  </script>
+</body>
+</html>

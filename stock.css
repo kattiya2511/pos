@@ -1,0 +1,408 @@
+/* ======= พื้นฐาน layout ======= */
+#stockPage {
+  display: flex;
+  height: 100%;
+  font-family: 'Sarabun', sans-serif;
+  background: #fff;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.stock-sidebar {
+  width: 260px;
+  border-right: 1px solid #ddd;
+  padding-right: 20px;
+}
+
+.stock-main {
+  flex: 1;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ======= หมวดหมู่ ======= */
+.stock-category-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.category-item {
+  padding: 10px 14px;
+  background: #f6f6f6;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.category-item.active {
+  background: #b22b24;
+  color: white;
+  font-weight: bold;
+}
+
+.category-item:hover {
+  background: #ff0000;
+}
+
+/* ======= สินค้า ======= */
+.stock-product-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.stock-product-header h3 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.product-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.product-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+  padding: 10px 0;
+}
+
+.product-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.product-info strong {
+  font-size: 16px;
+  color: #333;
+}
+
+.product-info small {
+  color: #888;
+  font-size: 13px;
+}
+
+.edit-btn {
+  background: none;
+  border: none;
+  color: #00a86b;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.edit-btn:hover {
+  text-decoration: underline;
+}
+
+/* ======= ปุ่ม ======= */
+.btn {
+  background-color: #b22b24;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s ease;
+}
+
+.btn:hover {
+  background-color: #ff0303;
+}
+
+.btn-secondary {
+  background-color: #eee;
+  color: #333;
+}
+
+.btn-secondary:hover {
+  background-color: #ddd;
+}
+
+/* ======= ฟอร์มแก้ไข/เพิ่ม ======= */
+#editFormContainer, #addStockForm {
+  margin-top: 20px;
+  padding: 16px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background: #fafafa;
+}
+
+#editFormContainer input, #addStockForm input {
+  display: block;
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+.hidden {
+  display: none;
+}
+
+/* ปุ่มเพิ่มสินค้า */
+.add-product-btn {
+  background: #4caf50;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+/* Modal */
+.modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px 30px;
+  width: 90%;
+  max-width: 900px;
+  max-height: 95vh;
+  overflow-y: auto;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.modal-header h2 {
+  margin: 0;
+}
+
+.modal-header button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.form-grid {
+  display: flex;
+  gap: 30px;
+}
+
+.form-left, .form-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.form-left input,
+.form-right input,
+.form-left select,
+.form-right select {
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.btn-save {
+  padding: 10px;
+  background: #2e7d32;
+  color: white;
+  border: none;
+  font-size: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.hidden {
+  display: none !important;
+}
+.image-upload-box {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border: 2px dashed #ccc;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.image-upload-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.overlay-text {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  text-align: center;
+  font-size: 14px;
+  padding: 4px 0;
+}
+
+/* ✅ กล่อง Input พร้อมปุ่ม Scan */
+.barcode-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.barcode-input-wrapper input {
+  width: 100%;
+  padding: 8px 40px 8px 12px; /* เผื่อพื้นที่ขวาสำหรับปุ่ม */
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+.scan-icon-btn {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: #555;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scan-icon-btn:hover {
+  color: #000;
+}
+
+/* ✅ ปุ่ม Scan แบบปุ่มทั่วไป */
+.scan-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+/* ✅ สไตล์ปุ่มเทา */
+.scan-btn.gray {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.scan-btn.gray:hover {
+  background-color: #d5d5d5;
+}
+
+.scan-btn.gray:active {
+  background-color: #c0c0c0;
+}
+
+/* ✅ ปุ่ม Scan ไอคอนฝังใน input */
+.barcode-input-wrapper .scan-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #666;
+  padding: 4px;
+}
+
+.barcode-input-wrapper .scan-btn:hover {
+  color: #000;
+}
+
+/* ✅ พื้นหลังทับหน้าทั้งหมด */
+.scanner-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ✅ กล่องกล้องสแกนกลางหน้าจอ */
+.scanner-box {
+  background: #fff;
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  max-width: 390px;
+  width: 85%;
+  position: relative;
+}
+
+
+#barcode-scanner {
+  width: 100%;
+  height: 250px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #000;
+}
+
+/* ✅ ปุ่มปิด */
+.scanner-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #000000;
+}
+
+/* ✅ ข้อความแนะนำ */
+.scanner-instruction {
+  text-align: center;
+  margin-top: 0.75rem;
+  font-size: 14px;
+  color: #444;
+}
+
+/* ✅ ซ่อนได้ */
+.hidden {
+  display: none;
+}

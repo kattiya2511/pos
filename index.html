@@ -1,0 +1,98 @@
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>FamePos</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</head>
+<body>
+  <div class="container">
+    <!-- 🔐 Login Form -->
+    <div id="login-form">
+      <div style="text-align:center; margin-top: 30px;">
+        <img src="./images/logo.png" alt="FamePOS Logo" style="width: 150px;" />
+      </div>
+
+      <h2>เข้าสู่ระบบ</h2>
+      <p class="desc">กรุณากรอกข้อมูลเพื่อเข้าสู่ระบบ POS</p>
+
+      <input id="email" type="email" placeholder="อีเมล">
+      <input id="password" type="password" placeholder="รหัสผ่าน">
+      
+      <div class="forgot-line">
+        <span></span>
+        <a href="#" id="forgot-password">ลืมรหัสผ่าน?</a>
+      </div>
+
+      <button id="login-btn" class="btn green">เข้าสู่ระบบ</button>
+      
+      <div class="or-divider">หรือ</div>
+      
+      <button id="google-btn" class="btn white">
+        <img src="https://developers.google.com/identity/images/g-logo.png" class="icon"> Sign in with Google
+      </button>
+
+      <p class="register-msg">
+        คุณยังไม่มีบัญชีใช่ไหม? <a href="#" id="register-btn">ลงทะเบียนใช้งานฟรี</a>
+      </p>
+    </div>
+
+    <!-- 🏪 Register Form -->
+<!-- หน้า Register/สร้างร้าน -->
+<div id="register-form" class="form-container">
+  <h2>สร้างบัญชีเจ้าของร้าน</h2>
+  <div class="field-row">
+    <label>ชื่อ*</label><input id="firstName" required>
+    <label>นามสกุล*</label><input id="lastName" required>
+  </div>
+  <div class="form-section">
+  <label>ประเภท*</label>
+  <div class="radio-group">
+    <label class="radio-option">
+      <input type="radio" name="type" value="บุคคล" required>
+      บุคคล
+    </label>
+    <label class="radio-option">
+      <input type="radio" name="type" value="นิติบุคคล">
+      นิติบุคคล
+    </label>
+  </div>
+</div>
+
+  <label>ชื่อร้านค้า (ถ้ามี) <input id="shopName"></label>
+  <label>ประเภทร้านค้า* 
+    <select id="shopType" required>
+      <option value="">เลือก...</option>
+      <option>ร้านอาหาร</option>
+      <option>ร้านเสื้อผ้า</option>
+      <option>อื่น ๆ</option>
+    </select>
+  </label>
+
+<label>จังหวัด* <select id="province" required></select></label>
+<label>อำเภอ* <select id="district" required></select></label>
+<label>ตำบล* <select id="subdistrict" required></select></label>
+  <label>รายละเอียดที่อยู่ <input id="address"></label>
+
+  <label>เบอร์โทร* <input id="phone" required placeholder="0987654321"></label>
+  <label>อีเมล* <input type="email" id="emailReg" required></label>
+  <label>รหัสผ่าน* <input type="password" id="passwordReg" required></label>
+  <label>ยืนยันรหัสผ่าน* <input type="password" id="confirmPasswordReg" required></label>
+
+  <button id="create-shop-btn">สร้างร้านค้า</button>
+  <p><a href="#" id="back-to-login">กลับเข้าสู่ระบบ</a></p>
+</div>
+
+
+<!-- ✅ เรียงลำดับให้แน่ใจว่า JS dependencies โหลดก่อน -->
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+<script type="module" src="firebase.js"></script>
+<script type="module" src="dropdown.js"></script>
+<script type="module" src="script.js"></script>
+</body>
+</html>
